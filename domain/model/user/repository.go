@@ -1,5 +1,6 @@
 package user
 
 type UserRepository interface {
-	List() []*user
+	List() ([]*User, error)
+	VisibleName() string
 }
