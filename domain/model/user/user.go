@@ -1,6 +1,6 @@
 package user
 
-type user struct {
+type User struct {
 	id         string
 	familyName string
 	givenName  string
@@ -12,22 +12,22 @@ func NewUser(
 	familyName,
 	givenName,
 	email string,
-) *user {
-	return &user{id, familyName, givenName, email}
+) *User {
+	return &User{id, familyName, givenName, email}
 }
 
-func (u *user) Id() string {
+func (u *User) Id() string {
 	return u.id
 }
 
-func (u *user) FamilyName() string {
+func (u *User) FamilyName() string {
 	return u.familyName
 }
 
-func (u *user) GivenName() string {
+func (u *User) GivenName() string {
 	return u.givenName
 }
 
-func (u *user) Email() string {
+func (u *User) Email() string {
 	return u.email
 }
