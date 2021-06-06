@@ -21,3 +21,11 @@ $ gcloud app deploy
 ```sh
 $ go run main.go
 ```
+
+## Prerequisites
+
+### Environment variables
+
+- APPENGINEDEMO_GCP_PROJECT_ID
+- APPENGINEDEMO_SHEETS_KEY
+- APPENGINEDEMO_SHEETS_NAME
