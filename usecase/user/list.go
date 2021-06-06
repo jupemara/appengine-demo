@@ -40,7 +40,7 @@ func (u *ListUserUsecase) Execute() ([]*Dto, error) {
 	if err != nil {
 		return nil, err
 	}
-	results := make([]*Dto, len(u.repositories))
+	results := make([]*Dto, 0, len(u.repositories))
 	for v := range rc {
 		results = append(results, v)
 	}
