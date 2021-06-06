@@ -23,14 +23,14 @@ func NewListUserUsecase(repositories []user.UserRepository) *ListUserUsecase {
 
 func (u *ListUserUsecase) Execute(ctx context.Context) ([]*Dto, error) {
 	tr := otel.GetTracerProvider().Tracer("appengine-demo/list")
-	_, span := tr.Start(ctx, "usecase")
+	uctx, span := tr.Start(ctx, "usecase")
 	defer span.End()
 	rc := make(chan *Dto, len(u.repositories))
 	eg := new(errgroup.Group)
 	for _, r := range u.repositories {
 		r := r
 		eg.Go(func() error {
-			users, err := r.List()
+			users, err := r.List(uctx)
 			if err != nil {
 				return err
 			}

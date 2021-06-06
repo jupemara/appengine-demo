@@ -1,11 +1,13 @@
 package csv
 
 import (
+	"context"
 	"encoding/csv"
 	"io"
 	"os"
 
 	"github.com/jupemara/appengine-demo/domain/model/user"
+	"go.opentelemetry.io/otel"
 )
 
 type userRepository struct {
@@ -16,11 +18,14 @@ func NewUserRepository(db string) *userRepository {
 	return &userRepository{db}
 }
 
-func (r *userRepository) VisibleName() string {
+func (r userRepository) VisibleName() string {
 	return "CSV"
 }
 
-func (r *userRepository) List() ([]*user.User, error) {
+func (r *userRepository) List(ctx context.Context) ([]*user.User, error) {
+	tr := otel.GetTracerProvider().Tracer("appengine-demo/list")
+	_, span := tr.Start(ctx, r.VisibleName())
+	defer span.End()
 	file, err := os.OpenFile(r.db, os.O_RDONLY, 0600)
 	if err != nil {
 		return nil, err

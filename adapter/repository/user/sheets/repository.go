@@ -5,6 +5,7 @@ import (
 
 	"github.com/jupemara/appengine-demo/domain/model/user"
 	sheets "github.com/jupemara/go-spreadsheet-sql"
+	"go.opentelemetry.io/otel"
 )
 
 type userRepository struct {
@@ -15,11 +16,14 @@ func NewUserRepository(client *sheets.Client) *userRepository {
 	return &userRepository{client}
 }
 
-func (r *userRepository) VisibleName() string {
+func (r userRepository) VisibleName() string {
 	return "GOOGLE_SHEETS"
 }
 
-func (r *userRepository) List() ([]*user.User, error) {
+func (r *userRepository) List(ctx context.Context) ([]*user.User, error) {
+	tr := otel.GetTracerProvider().Tracer("appengine-demo/list")
+	_, span := tr.Start(ctx, r.VisibleName())
+	defer span.End()
 	rows, err := r.client.Query(
 		context.TODO(),
 		`SELECT *`,

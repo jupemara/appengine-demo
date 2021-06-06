@@ -34,11 +34,11 @@ func NewHttpUserListHandler(usecase *usecase.ListUserUsecase) *httpUserListHandl
 }
 
 func (h *httpUserListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	rctx := r.Context()
 	tr := otel.GetTracerProvider().Tracer("appengine-demo/list")
-	_, span := tr.Start(ctx, "httpUserListHandler")
+	sctx, span := tr.Start(rctx, "httpUserListHandler")
 	defer span.End()
-	vs, err := h.usecase.Execute(ctx)
+	vs, err := h.usecase.Execute(sctx)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
