@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -9,6 +10,7 @@ type config struct {
 	gcpProjectId string
 	sheetsKey    string
 	sheetsName   string
+	port         string
 }
 
 func NewConfig() config {
@@ -28,9 +30,15 @@ func (c *config) Load() error {
 	if len(sheetsName) <= 0 {
 		return fmt.Errorf(`google sheets sheet name must be set`)
 	}
+	port := os.Getenv("APPENGINEDEMO_PORT")
+	if len(port) <= 0 {
+		log.Println(`set exported port 8080 as default`)
+		port = "8080"
+	}
 	c.gcpProjectId = gcpProjectId
 	c.sheetsKey = sheetsKey
 	c.sheetsName = sheetsName
+	c.port = port
 	return nil
 }
 
@@ -44,4 +52,8 @@ func (c config) SheetsKey() string {
 
 func (c config) SheetsName() string {
 	return c.sheetsName
+}
+
+func (c config) Port() string {
+	return c.port
 }
