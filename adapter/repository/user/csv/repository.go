@@ -26,7 +26,7 @@ func (r *userRepository) List() ([]*user.User, error) {
 		return nil, err
 	}
 	reader := csv.NewReader(file)
-	us := make([]*user.User, 0)
+	us := []*user.User{}
 	for {
 		record, err := reader.Read()
 		if err == io.EOF {

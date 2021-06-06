@@ -2,6 +2,7 @@ package user
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	usecase "github.com/jupemara/appengine-demo/usecase/user"
@@ -34,6 +35,7 @@ func NewHttpUserListHandler(usecase *usecase.ListUserUsecase) *httpUserListHandl
 func (h *httpUserListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vs, err := h.usecase.Execute()
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -58,6 +60,7 @@ func (h *httpUserListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		Samples: samples,
 	}, "", "  ")
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
