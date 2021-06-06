@@ -5,9 +5,11 @@ import (
 	"log"
 	"net/http"
 
+	firebase "firebase.google.com/go"
 	"github.com/jupemara/appengine-demo/adapter/config"
 	handler "github.com/jupemara/appengine-demo/adapter/controller/http/user"
 	"github.com/jupemara/appengine-demo/adapter/repository/user/csv"
+	"github.com/jupemara/appengine-demo/adapter/repository/user/firestore"
 	"github.com/jupemara/appengine-demo/adapter/repository/user/sheets"
 	domain "github.com/jupemara/appengine-demo/domain/model/user"
 	usecase "github.com/jupemara/appengine-demo/usecase/user"
@@ -29,11 +31,23 @@ func main() {
 	if err != nil {
 		log.Fatalf(`%s%s`, e, err)
 	}
+	firebaseApp, err := firebase.NewApp(
+		context.TODO(),
+		&firebase.Config{ProjectID: c.GcpProjectId()},
+	)
+	if err != nil {
+		log.Fatalf(`%s%s`, e, err)
+	}
+	firestoreClient, err := firebaseApp.Firestore(context.TODO())
+	if err != nil {
+		log.Fatalf(`%s%s`, e, err)
+	}
 	listHandler := handler.NewHttpUserListHandler(
 		usecase.NewListUserUsecase(
 			[]domain.UserRepository{
 				csv.NewUserRepository("./data/users.csv"),
 				sheets.NewUserRepository(sheetsClient),
+				firestore.NewUserRepository(firestoreClient),
 			},
 		),
 	)
