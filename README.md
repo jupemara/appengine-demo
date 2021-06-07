@@ -5,6 +5,10 @@ demo project
 ## Components
 
 - App Engine
+- Google Sheets
+- Cloud Trace
+- OpenTelemetry
+- Cloud Firestore
 
 ## How to start this demo
 
