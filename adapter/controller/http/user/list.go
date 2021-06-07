@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	usecase "github.com/jupemara/appengine-demo/usecase/user"
+	"go.opentelemetry.io/otel"
 )
 
 type httpUserListHandler struct {
@@ -33,7 +34,11 @@ func NewHttpUserListHandler(usecase *usecase.ListUserUsecase) *httpUserListHandl
 }
 
 func (h *httpUserListHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	vs, err := h.usecase.Execute()
+	rctx := r.Context()
+	tr := otel.GetTracerProvider().Tracer("appengine-demo/list")
+	sctx, span := tr.Start(rctx, "httpUserListHandler")
+	defer span.End()
+	vs, err := h.usecase.Execute(sctx)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

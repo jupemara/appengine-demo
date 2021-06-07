@@ -1,7 +1,10 @@
 package user
 
 import (
+	"context"
+
 	"github.com/jupemara/appengine-demo/domain/model/user"
+	"go.opentelemetry.io/otel"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -18,13 +21,16 @@ func NewListUserUsecase(repositories []user.UserRepository) *ListUserUsecase {
 	return &ListUserUsecase{repositories}
 }
 
-func (u *ListUserUsecase) Execute() ([]*Dto, error) {
+func (u *ListUserUsecase) Execute(ctx context.Context) ([]*Dto, error) {
+	tr := otel.GetTracerProvider().Tracer("appengine-demo/list")
+	uctx, span := tr.Start(ctx, "usecase")
+	defer span.End()
 	rc := make(chan *Dto, len(u.repositories))
 	eg := new(errgroup.Group)
 	for _, r := range u.repositories {
 		r := r
 		eg.Go(func() error {
-			users, err := r.List()
+			users, err := r.List(uctx)
 			if err != nil {
 				return err
 			}
